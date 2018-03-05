@@ -20,8 +20,8 @@ function addPlayer(playerId){
     var playerNum = gameData['totalPlayers'] + 1;
     gameData['totalPlayers'] = playerNum;
     gameData[playerId] = {
-        'x': 0,
-        'y': 0,
+        'x': -10,
+        'y': -10,
         'angle': 0
     }
 }
@@ -32,18 +32,21 @@ app.get('/', function(req, res){
 });
 
 function analyzePositions(playerData){
-    
+    playerData = JSON.parse(playerData);
+    gameData[playerData['id']]['x'] = playerData['x'];
+    gameData[playerData['id']]['y'] = playerData['y'];
+    gameData[playerData['id']]['angle'] = playerData['angle'];
 }
 
 function extractUserData(res, id){
-    console.log(id['data']);
+    //console.log(id['data']);
     if(id['data'] == "getid"){
         playerConnect();
         res.send(playerId.toString());
         playerId++;
     }else{
         analyzePositions(id['data']);
-        //console.log(gameData);
+        console.log(gameData);
         res.send(gameData);
     }
 }

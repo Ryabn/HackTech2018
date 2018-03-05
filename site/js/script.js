@@ -1,36 +1,29 @@
 var xhr = new XMLHttpRequest();
 var url = "http://localhost:8080/";
-var userPlaying = 0;
-var clientId;
-var xDir = 0;
-var yDir = 0;
-var calculatedAngle = 0;
-var userShoot = 0;
+var userPlaying = 0, clientId, xDir = 0, yDir = 0, calculatedAngle = 0, userShoot = 0;
 var gameData = {};
+var shipSet = [];
 
 function getClientId(){
      xhr.onload = function () {
         if (xhr.readyState === xhr.DONE) {
             if (xhr.status === 200) {
                 clientId = xhr.responseText;
-                gameField.start();
+                receivedSetupData();
             }
         }
     };
     xhr.open("GET", url + "?data=getid", true);
     xhr.send();
 }
-
 function retrieveServerData(){
     var userData = {
         'id': clientId,
-        'inPlay': userPlaying,
         'x': xDir,
         'y': yDir,
         'angle': calculatedAngle,
         'shoot': userShoot
     };
-    
     xhr.onload = function () {
         if (xhr.readyState === xhr.DONE) {
             if (xhr.status === 200) {
@@ -39,15 +32,25 @@ function retrieveServerData(){
             }
         }
     };
-    
     xhr.open("GET", url + "?data=" + JSON.stringify(userData), true);
     xhr.send();
 } 
-
-function update(){
-    retrieveServerData();
+function setupShips(){
+    playerShip = new ship(39, 45, './images/user.png', xDir, yDir);
+    for(let i = 0; i < gameData['totalPlayers']-1; i++){
+        shipSet.push(new ship(39, 45, './images/user.png', gameData[i]['x'], gameData[i]['y']));
+    }
 }
-
+function receivedSetupData(){
+    gameField.start();
+    setupShips();
+}
+function setupAnimation(){
+    for(let i = 0; i < shipSet.length; i++){
+        shipSet[i].x = gameData[i]['x'];
+        shipSet[i].y = gameData[i]['y'];
+    }
+}
 document.addEventListener('keydown', (event) => {
     const keyName = event.key;
     

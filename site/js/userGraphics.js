@@ -1,12 +1,3 @@
-function startGame(){
-    getClientId();
-    //setUserStats();
-    //playerBoat = new userBoat(window.innerHeight/5, window.innerHeight/10, boatImageDat, window.innerWidth/2, window.innerHeight*0.7);
-    //userControls();
-    //displayHealth();
-    //generateEnemies();
-}
-
 var gameField = {
     canvas : document.createElement("canvas"),
     start: function() {
@@ -23,12 +14,16 @@ var gameField = {
 
 function spawn(){
     xDir = Math.floor(Math.random()*400);
-    yDir = Math.floor(Math.random()*400);;
+    yDir = Math.floor(Math.random()*400);
 }
 
 function updateData(){
-    //updates data
-    //battlefield.clear();
-    //updates graphics
-    update();
+    retrieveServerData();
+    setupAnimation();
+    gameField.clear();
+    shipSet.forEach(function(element){
+        element.update();
+        element.newPos();
+        console.log(element.x, element.y);
+    });
 }
