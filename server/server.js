@@ -13,10 +13,6 @@ app.use(function(req, res, next) {
 });
 
 function playerConnect(){
-    addPlayer(playerId);
-}
-
-function addPlayer(playerId){
     var playerNum = gameData['totalPlayers'] + 1;
     gameData['totalPlayers'] = playerNum;
     gameData[playerId] = {
@@ -26,16 +22,17 @@ function addPlayer(playerId){
     }
 }
 
+
 app.get('/', function(req, res){
     var id = req.query;
     extractUserData(res, id);
 });
 
-function analyzePositions(playerData){
+function analyzePositions(playerData, clientId){
     playerData = JSON.parse(playerData);
-    gameData[playerData['id']]['x'] = playerData['x'];
-    gameData[playerData['id']]['y'] = playerData['y'];
-    gameData[playerData['id']]['angle'] = playerData['angle'];
+    gameData[clientId]['x'] = playerData['x'];
+    gameData[clientId]['y'] = playerData['y'];
+    gameData[clientId]['angle'] = playerData['angle'];
 }
 
 function extractUserData(res, id){
@@ -45,7 +42,7 @@ function extractUserData(res, id){
         res.send(playerId.toString());
         playerId++;
     }else{
-        analyzePositions(id['data']);
+        analyzePositions(id['data'], id['id']);
         console.log(gameData);
         res.send(gameData);
     }
