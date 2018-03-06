@@ -1,5 +1,5 @@
 var xhr = new XMLHttpRequest();
-var url = "http://localhost:8080/";
+var url = "http://hacktech2018-196900.appspot.com/";
 var userPlaying = 0, clientId, xDir = 0, yDir = 0, calculatedAngle = 0, userShoot = 0;
 var gameData = {};
 var allShips = [];
