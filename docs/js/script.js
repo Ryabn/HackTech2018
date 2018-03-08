@@ -44,33 +44,43 @@ function setupShips(){
     for (var key in gameData){
         if(key != 'totalPlayers'){
             if(clientId == key){
-                allShips.push(new ship(50, 50, './images/player1.svg', parseInt(gameData[key]['x']), parseInt(gameData[key]['y']), parseFloat(gameData[key]['angle']), key));
+                allShips.push(new pShip(50, 50, parseInt(gameData[key]['x']), parseInt(gameData[key]['y']), parseFloat(gameData[key]['angle']), key));
             }else{
-                allShips.push(new ship(50, 50, './images/enemy1.svg', parseInt(gameData[key]['x']), parseInt(gameData[key]['y']), parseFloat(gameData[key]['angle']), key));
+                allShips.push(new eShip(50, 50, parseInt(gameData[key]['x']), parseInt(gameData[key]['y']), parseFloat(gameData[key]['angle']), key));
             }
+        }
+    }  
+    //userPlaying = gameData['totalPlayers'];
+}
+function setupLasers(){
+    allLasers = [];
+    for (var key in gameData){
+        if(key != 'totalPlayers'){
+            allLasers.push(new laser(10, 70, parseInt(gameData[key]['x']), parseInt(gameData[key]['y']), parseFloat(gameData[key]['angle']), key));
         }
     }  
     userPlaying = gameData['totalPlayers'];
 }
 function receivedSetupData(){
-    
-    allLasers.push(new laser(10, 75, './images/laser1.svg', 0, 0, 0));
-    allLasers.push(new laser(10, 75, './images/laser1.svg', 0, 0, 0));
     setupShips();
+    setupLasers();
     gameField.start();
 }
 
-function shootLaser(x, y, angle){
-     allLasers.forEach(function(element){
-            element.x = gameData[element.id]['x'];
-            element.y = gameData[element.id]['y'];
+function updateLasers(){
+    if(userPlaying != gameData['totalPlayers']){
+        setupLasers();
+    }else{
+        allLasers.forEach(function(element){
             element.angle = gameData[element.id]['angle'];
+            element.x = gameData[element.id]['x'] + (60 * Math.sin(-element.angle + 1.63));
+            element.y = gameData[element.id]['y'] + (60 * Math.cos(-element.angle + 1.63));
         });
+    }   
     console.log(allLasers);
 }
 
-function setupAnimation(){
-    shootLaser(gameData[0]['x'],gameData[0]['y'],gameData[0]['angle']);
+function updateShips(){
     if(userPlaying != gameData['totalPlayers']){
         setupShips();
         console.log("its repeating!!!!");
@@ -81,6 +91,10 @@ function setupAnimation(){
             element.angle = gameData[element.id]['angle'];
         });
     }   
+}
+function setupAnimation(){
+    updateShips();
+    updateLasers();
 }
 
 document.addEventListener('keydown', (event) => {

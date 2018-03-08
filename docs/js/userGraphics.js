@@ -25,7 +25,9 @@ function updateData(){
     gameField.clear();
     
     allShips.forEach(function(element){
-        //element.newPos();
+        element.update();
+    });
+    allLasers.forEach(function(element){
         element.update();
     });
 }
