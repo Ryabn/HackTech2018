@@ -1,22 +1,35 @@
 var boatImage = new Image();
 
-function ship(width, height, imageSrc, x, y){
-    //this.id = id;
+function ship(width, height, imageSrc, x, y, angle, id){
     this.width = width;
     this.height = height;
-    this.angle = 1.57;
+    this.angle = angle;
+    this.id = id;
     this.x = x;
     this.y = y;    
     this.update = function(){
         ctx = gameField.context;
         boatImage.src = imageSrc;
-        ctx.drawImage(boatImage, this.x , this.y , this.width, this.height);
-        //ctx.restore();
-    }
-    this.newPos = function(){
-        this.x = xDir;
-        this.y = yDir;
+        ctx.save();
+        ctx.translate(this.x, this.y);
+        ctx.rotate(this.angle + 1.5);
+        ctx.drawImage(boatImage, -this.width/2 ,-this.height/2 , this.width, this.height);
+        ctx.restore();
     }
 }
-
-//set clientId so that every boat object that is created is referenced by it
+function laser(width, height, imageSrc, x, y, angle){
+    this.width = width;
+    this.height = height;
+    this.angle = angle;
+    this.x = x;
+    this.y = y;    
+    this.update = function(){
+        ctx = gameField.context;
+        boatImage.src = imageSrc;
+        ctx.save();
+        ctx.translate(this.x, this.y);
+        ctx.rotate(this.angle + 1.5);
+        ctx.drawImage(boatImage, -this.width/2 ,-this.height/2 , this.width, this.height);
+        ctx.restore();
+    }
+}

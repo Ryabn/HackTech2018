@@ -1,8 +1,7 @@
 body{
     margin: 0;
-    
+    background-color: #21252d;
 }
-
 .somebutt{
     border: solid 1px black;
     background-color: yellowgreen;

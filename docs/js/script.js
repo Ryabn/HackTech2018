@@ -1,8 +1,9 @@
 var xhr = new XMLHttpRequest();
-var url = "http://hacktech2018-196900.appspot.com/";
-var userPlaying = 0, clientId, xDir = 0, yDir = 0, calculatedAngle = 0, userShoot = 0;
+//var url = "http://hacktech2018-196900.appspot.com/";
+var url = "http://localhost:8080/";
+var userPlaying = 0, clientId, xDir = 0, yDir = 0, calculatedAngle = 0, userShoot = 0, mouseX = 0, mouseY = 0;
 var gameData = {};
-var allShips = [];
+var allShips = [], allLasers = [];
 var moveX = 0, moveY = 0;
 
 function getClientId(){
@@ -20,6 +21,7 @@ function getClientId(){
 function retrieveServerData(){
     xDir += moveX;
     yDir += moveY;
+    calculateAngle();
     var userData = {
         'x': xDir,
         'y': yDir,
@@ -38,36 +40,49 @@ function retrieveServerData(){
     xhr.send();
 } 
 function setupShips(){
-    for(let i = 0; i < gameData['totalPlayers']; i++){
-        /*
-        console.log("not being run");
-        if(i == clientId){
-            allShips.push(new ship(50, 50, './images/player.svg', xDir, yDir));
-        }else{
-            allShips.push(new ship(50, 50, './images/enemy.svg', parseInt(gameData[i]['x']), parseInt(gameData[i]['y'])));
+    allShips = [];
+    for (var key in gameData){
+        if(key != 'totalPlayers'){
+            if(clientId == key){
+                allShips.push(new ship(50, 50, './images/player1.svg', parseInt(gameData[key]['x']), parseInt(gameData[key]['y']), parseFloat(gameData[key]['angle']), key));
+            }else{
+                allShips.push(new ship(50, 50, './images/enemy1.svg', parseInt(gameData[key]['x']), parseInt(gameData[key]['y']), parseFloat(gameData[key]['angle']), key));
+            }
         }
-        */
-        console.log(parseInt(gameData[i]['x']), parseInt(gameData[i]['y']));
-        allShips.push(new ship(50, 50, './images/player.svg', parseInt(gameData[i]['x']), parseInt(gameData[i]['y'])));
-    }
+    }  
+    userPlaying = gameData['totalPlayers'];
 }
 function receivedSetupData(){
+    
+    allLasers.push(new laser(10, 75, './images/laser1.svg', 0, 0, 0));
+    allLasers.push(new laser(10, 75, './images/laser1.svg', 0, 0, 0));
     setupShips();
     gameField.start();
 }
-function setupAnimation(){
-    allShips = [];
-    setupShips();
-    /*
-    if(gameData['totalPlayers'] >= allShips.length()){
-        setupShips();
-    }
-    for(let i = 0; i < shipSet.length; i++){
-        allShips[i].x = gameData[i]['x'];
-        allShips[i].y = gameData[i]['y'];
-    }
-    */
+
+function shootLaser(x, y, angle){
+     allLasers.forEach(function(element){
+            element.x = gameData[element.id]['x'];
+            element.y = gameData[element.id]['y'];
+            element.angle = gameData[element.id]['angle'];
+        });
+    console.log(allLasers);
 }
+
+function setupAnimation(){
+    shootLaser(gameData[0]['x'],gameData[0]['y'],gameData[0]['angle']);
+    if(userPlaying != gameData['totalPlayers']){
+        setupShips();
+        console.log("its repeating!!!!");
+    }else{
+        allShips.forEach(function(element){
+            element.x = gameData[element.id]['x'];
+            element.y = gameData[element.id]['y'];
+            element.angle = gameData[element.id]['angle'];
+        });
+    }   
+}
+
 document.addEventListener('keydown', (event) => {
     const keyName = event.key
     switch(keyName){
