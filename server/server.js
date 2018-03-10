@@ -46,7 +46,7 @@ function analyzePositions(playerData, clientId){
     if(canShootGameData[clientId] && playerData['shoot']){
         gameData[clientId]['shoot'] = true;
         canShootGameData[clientId] = false;
-        checkCollision(playerData['x'],playerData['y'],playerData['angle'];);
+        //checkCollision(playerData['x'],playerData['y'],playerData['angle'];);
         setTimeout(function(){
             gameData[clientId]['shoot'] = false;
             setTimeout(function(){
@@ -68,6 +68,24 @@ function extractUserData(res, id){
 }
 
 function checkCollision(x, y, angle){
+    //laserx = x + (60 * Math.sin(-angle + 1.63));
+    //lasery = y + (60 * Math.cos(-angle + 1.63));
+    //-tan of angle is slope of the line
+    // b = y - (tan(angle) * x)
+    // m = tan(angle)
+    // 
+    //point 1:
+    var x1 = x + 20 * Math.sin(angle);
+    var y1 = y + 20 * Math.cos(angle);
+    //point 2:
+    var x2 = x + x - x1;
+    var y2 = y + y - y1;
+    //point 3:
+    var x3 = x1 + 70 * Math.sin(angle + 1.5708);
+    var y3 = y1 + 70 * Math.cos(angle + 1.5708);
+    //point 4:
+    var x4 = x3 + (x2 - x1);
+    var y4 = y3 + (y2 - y1);
     for(var key in gameData){
         
     }
