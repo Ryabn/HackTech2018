@@ -42,8 +42,8 @@ function laser(width, height, x, y, angle, id){
     this.width = width;
     this.height = height;
     this.angle = angle;
-    this.x = 50 * Math.sin(angle) + x;
-    this.y = 50 * Math.cos(angle) + y;
+    this.x = x;
+    this.y = y;
     this.update = function(){
         ctx = gameField.context;
         ctx.save();

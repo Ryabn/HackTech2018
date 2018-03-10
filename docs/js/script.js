@@ -1,8 +1,9 @@
 var xhr = new XMLHttpRequest();
 //var url = "http://hacktech2018-196900.appspot.com/";
 var url = "http://localhost:8080/";
-var userPlaying = 0, clientId, xDir = 0, yDir = 0, calculatedAngle = 0, userShoot = 0, mouseX = 0, mouseY = 0;
-var gameData = {};
+var userPlaying = 0, clientId, xDir = 0, yDir = 0, calculatedAngle = 0, userShoot = false, mouseX = 0, mouseY = 0;
+var gameData  = {},
+    laserData = {};
 var allShips = [], allLasers = [];
 var moveX = 0, moveY = 0;
 
@@ -43,6 +44,7 @@ function setupShips(){
     allShips = [];
     for (var key in gameData){
         if(key != 'totalPlayers'){
+            laserData[key] = true;
             if(clientId == key){
                 allShips.push(new pShip(50, 50, parseInt(gameData[key]['x']), parseInt(gameData[key]['y']), parseFloat(gameData[key]['angle']), key));
             }else{
@@ -50,55 +52,47 @@ function setupShips(){
             }
         }
     }  
-    //userPlaying = gameData['totalPlayers'];
-}
-function setupLasers(){
-    allLasers = [];
-    for (var key in gameData){
-        if(key != 'totalPlayers'){
-            allLasers.push(new laser(10, 70, parseInt(gameData[key]['x']), parseInt(gameData[key]['y']), parseFloat(gameData[key]['angle']), key));
-        }
-    }  
     userPlaying = gameData['totalPlayers'];
+}
+function shootLasers(key){
+    allLasers.push(new laser(10, 70,
+    gameData[key]['x'] + (60 * Math.sin(-gameData[key]['angle'] + 1.63)),
+    gameData[key]['y'] + (60 * Math.cos(-gameData[key]['angle'] + 1.63)),
+    parseFloat(gameData[key]['angle']), key));
+    laserData[key] = false;
+    setTimeout(function(){
+        for(let i = 0; i < allLasers.length; i++){
+            if(allLasers[i].id == key){
+                allLasers.splice(i, 1);
+            }
+        }
+        laserData[key] = true;
+    }, 260);
 }
 function receivedSetupData(){
     setupShips();
-    setupLasers();
     gameField.start();
 }
-
-function updateLasers(){
-    if(userPlaying != gameData['totalPlayers']){
-        setupLasers();
-    }else{
-        allLasers.forEach(function(element){
-            element.angle = gameData[element.id]['angle'];
-            element.x = gameData[element.id]['x'] + (60 * Math.sin(-element.angle + 1.63));
-            element.y = gameData[element.id]['y'] + (60 * Math.cos(-element.angle + 1.63));
-        });
-    }   
-    console.log(allLasers);
-}
-
 function updateShips(){
     if(userPlaying != gameData['totalPlayers']){
         setupShips();
-        console.log("its repeating!!!!");
     }else{
         allShips.forEach(function(element){
             element.x = gameData[element.id]['x'];
             element.y = gameData[element.id]['y'];
             element.angle = gameData[element.id]['angle'];
+            if(gameData[element.id]['shoot'] && laserData[element.id]){
+               shootLasers(element.id);
+            }
         });
     }   
 }
 function setupAnimation(){
     updateShips();
-    updateLasers();
 }
 
 document.addEventListener('keydown', (event) => {
-    const keyName = event.key
+    const keyName = event.key;
     switch(keyName){
         case 'w':
             moveY = -2;
@@ -111,6 +105,9 @@ document.addEventListener('keydown', (event) => {
             break;
         case 'd':
             moveX = 2;
+            break;
+        case 'r':
+            userShoot = true;
             break;
         default:
             console.log("not wasd");
@@ -131,6 +128,9 @@ document.addEventListener('keyup', (event) => {
             break;
         case 'd':
             moveX = 0;
+            break;
+        case 'r':
+            userShoot = false;
             break;
         default:
             console.log("not wasd");
