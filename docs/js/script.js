@@ -33,7 +33,10 @@ function retrieveServerData(){
         if (xhr.readyState === xhr.DONE) {
             if (xhr.status === 200) {
                 gameData = JSON.parse(xhr.responseText);
-                document.getElementById('display').innerHTML = JSON.stringify(gameData);
+                if(gameData['totalPlayers'] == -2){
+                    clearInterval(gameField.interval);
+                    alert(gameData['message']);
+                }
             }
         }
     };
@@ -77,12 +80,16 @@ function updateShips(){
     if(userPlaying != gameData['totalPlayers']){
         setupShips();
     }else{
-        allShips.forEach(function(element){
-            element.x = gameData[element.id]['x'];
-            element.y = gameData[element.id]['y'];
-            element.angle = gameData[element.id]['angle'];
-            if(gameData[element.id]['shoot'] && laserData[element.id]){
-               shootLasers(element.id);
+        allShips.forEach(function(element, index){
+            if(gameData.hasOwnProperty(element.id)){
+                element.x = gameData[element.id]['x'];
+                element.y = gameData[element.id]['y'];
+                element.angle = gameData[element.id]['angle'];
+                if(gameData[element.id]['shoot'] && laserData[element.id]){
+                    shootLasers(element.id);
+                }
+            }else{
+                allShips.splice(index, 1);
             }
         });
     }   

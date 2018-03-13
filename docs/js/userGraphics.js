@@ -12,7 +12,6 @@ var gameField = {
         this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
     }
 }
-
 function spawn(){
     xDir = Math.floor(Math.random()*400);
     yDir = Math.floor(Math.random()*400);
@@ -24,6 +23,7 @@ function updateData(){
     
     gameField.clear();
     
+    //drawCollisionBox();
     allShips.forEach(function(element){
         element.update();
     });
@@ -47,4 +47,18 @@ gameField.canvas.addEventListener('mousemove', function(evt) {
 
 function calculateAngle(){
     calculatedAngle = Math.atan2((mouseY - yDir),(mouseX - xDir));
+}
+
+function drawCollisionBox(){
+    if(gameData.hasOwnProperty('collisionbox')){
+        var c = gameField.canvas;
+        var ctx = c.getContext("2d");
+        ctx.beginPath();
+        ctx.moveTo(gameData['collisionbox']['p1'][0],gameData['collisionbox']['p1'][1]);
+        ctx.lineTo(gameData['collisionbox']['p2'][0], gameData['collisionbox']['p2'][1]);
+        ctx.lineTo(gameData['collisionbox']['p4'][0], gameData['collisionbox']['p4'][1]);
+        ctx.lineTo(gameData['collisionbox']['p3'][0], gameData['collisionbox']['p3'][1]);
+        ctx.lineTo(gameData['collisionbox']['p1'][0], gameData['collisionbox']['p1'][1]);
+        ctx.stroke(); 
+    }
 }
