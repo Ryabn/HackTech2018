@@ -111,40 +111,37 @@ function checkCollision(clientId, x, y, angle){
     }
     //sort ySort using insertion sort
     //sorts from least to greatest
-    for(var i = 0; i < ySort.length; i++){
+    for(var i = 0; i < ySort.length - 1; i++){
         for(var j = i + 1; j >= 1; j--){
             if(ySort[j] < ySort[j-1]){
-                var temp = ySort[i];
-                ySort[i] = ySort[j];
+                var temp = ySort[j-1];
+                ySort[j-1] = ySort[j];
                 ySort[j] = temp;
             }
         }
     }
     
-    xSorted = getSlopes(ySort, xSorted);
+    xSorted = getSlopes(ySort, xSorted, angle);
     
     for(var key in gameData){
         if(clientId != key ){
             var pX = gameData[key]['x'];
             var pY = gameData[key]['y'];
-            if((pY >= ySort[0]) && (pY <= ySort[3])){
+            if( pY >= ySort[0] && pY <= ySort[3] && ( pX >= xSorted[ySort[1]] && pX <= xSorted[ySort[2]] || pX >= xSorted[ySort[2]] && pX <= xSorted[ySort[1]] )){
                 if(pY <= ySort[1]){
-                    //between 0 and 1
                     var uSlope = calculateSlopes(pY, pX, ySort[0], xSorted[ySort[0]]);
                     if(uSlope <= xSorted['slopes'][0] || uSlope >= xSorted['slopes'][1]){
                         destroyShip(key);
                     }
                 }else if(pY <= ySort[2]){
-                    //between 1 and 2
                     var uSlope = calculateSlopes(pY, pX, ySort[1], xSorted[ySort[1]]);
                     var uSlope2 = calculateSlopes(pY, pX, ySort[2], xSorted[ySort[2]]);
-                    if(uSlope <= xSorted['slopes'][5] && uSlope2 >= xSorted['slopes'][5]){
+                    if(uSlope <= xSorted['slopes'][2] && uSlope2 <= xSorted['slopes'][2]){
                         destroyShip(key);
                     }
                 }else{
-                    //between 2 and 3
                     var uSlope = calculateSlopes(pY, pX, ySort[3], xSorted[ySort[3]]);
-                    if(uSlope <= xSorted['slopes'][3] || uSlope >= xSorted['slopes'][2]){
+                    if(uSlope <= xSorted['slopes'][0] || uSlope >= xSorted['slopes'][1]){
                         destroyShip(key);
                     }
                 }   
@@ -156,24 +153,21 @@ function checkCollision(clientId, x, y, angle){
 function calculateSlopes(p1y, p1x, p2y, p2x){
     return (p2y - p1y)/(p2x - p1x);
 }
-function getSlopes(ySort, xSorted){
+function getSlopes(ySort, xSorted, angle){
     xSorted['slopes'] = [ 
         calculateSlopes(ySort[0], xSorted[ySort[0]], ySort[1], xSorted[ySort[1]]),
-        calculateSlopes(ySort[0], xSorted[ySort[0]], ySort[2], xSorted[ySort[2]]),
-        calculateSlopes(ySort[3], xSorted[ySort[3]], ySort[1], xSorted[ySort[1]]),
-        calculateSlopes(ySort[3], xSorted[ySort[3]], ySort[2], xSorted[ySort[2]]),
+        calculateSlopes(ySort[0], xSorted[ySort[0]], ySort[2], xSorted[ySort[2]])
     ];
     xSorted['slopes'].push(xSorted['slopes'][1]);
-    xSorted['slopes'].push(xSorted['slopes'][2]);
-    if(xSorted['slopes'][0] < xSorted['slopes'][1]){
+    if(xSorted['slopes'][0] > xSorted['slopes'][1]){
         var temp = xSorted['slopes'][0];
         xSorted['slopes'][0] = xSorted['slopes'][1];
         xSorted['slopes'][1] = temp;
     }
-    if(xSorted['slopes'][2] > xSorted['slopes'][3]){
-        var temp = xSorted['slopes'][2];
-        xSorted['slopes'][2] = xSorted['slopes'][3];
-        xSorted['slopes'][3] = temp;
+    if(angle < 0 && angle > -1.5708 || angle < 3.1415 && angle > 1.5708){
+        var temp = xSorted['slopes'][0];
+        xSorted['slopes'][0] = xSorted['slopes'][1];
+        xSorted['slopes'][1] = temp;
     }
     console.log(xSorted);
     return xSorted;
